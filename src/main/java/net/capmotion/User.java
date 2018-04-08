@@ -1,13 +1,18 @@
 package net.capmotion;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * Model class, represent an entity of the data source.
  * @author christianbarco
  *
  */
+@Entity
 public class User {
 	private String firstName;
 	private String lastName;
+	@Id
 	private String userName;
 	private String email;
 	private String phoneNumber;
