@@ -1,5 +1,7 @@
 package net.capmotion;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,29 @@ public class UserController {
 		user.setPassword(password);
 		userRepository.save(user);
 		return "User created";
+	}
+	
+	@GetMapping(path = "/update")
+	public @ResponseBody String updateUser(@RequestParam(value = "id", required = true) Long id,
+			@RequestParam(value = "firstName", required = true) String firstName,
+			@RequestParam(value = "lastName", required = true) String lastName,
+			@RequestParam(value = "userName", required = true) String userName,
+			@RequestParam(value = "email", required = true) String email,
+			@RequestParam(value = "phoneNumber", required = false) String phoneNumber) {
+
+		Optional<User> userOpt = userRepository.findById(id);
+		if (userOpt.isPresent()) {
+			User user = userOpt.get();
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
+			user.setUserName(userName);
+			user.setEmail(email);
+			user.setPhoneNumber(phoneNumber);
+			userRepository.save(user);
+			return "User [" + id + "] updated";
+		} else {
+			return "User [" + id + "] not found";
+		}
 	}
 
 }
