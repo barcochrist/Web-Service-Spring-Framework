@@ -1,12 +1,15 @@
 package net.capmotion;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,8 +71,8 @@ public class UserController {
 		}
 	}
 
-	@GetMapping(path = "/delete")
-	public @ResponseBody String deleteUser(@RequestParam(value = "id", required = true) Long id) {
+	@GetMapping(path = "/delete/{id}")
+	public @ResponseBody String deleteUser(@PathVariable("id") Long id) {
 		userRepository.deleteById(id);
 		return "User [" + id + "] deleted";
 	}
