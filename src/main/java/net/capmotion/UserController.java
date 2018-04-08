@@ -44,7 +44,7 @@ public class UserController {
 		userRepository.save(user);
 		return "User created";
 	}
-	
+
 	@GetMapping(path = "/update")
 	public @ResponseBody String updateUser(@RequestParam(value = "id", required = true) Long id,
 			@RequestParam(value = "firstName", required = true) String firstName,
@@ -68,4 +68,9 @@ public class UserController {
 		}
 	}
 
+	@GetMapping(path = "/delete")
+	public @ResponseBody String deleteUser(@RequestParam(value = "id", required = true) Long id) {
+		userRepository.deleteById(id);
+		return "User [" + id + "] deleted";
+	}
 }
