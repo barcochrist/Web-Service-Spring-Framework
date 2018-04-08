@@ -1,17 +1,18 @@
 package net.capmotion;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,49 +30,33 @@ public class UserController {
 		return userRepository.findAll();
 	}
 
-	@GetMapping(path = "/add")
-	public @ResponseBody String addUser(@RequestParam(value = "firstName", required = true) String firstName,
-			@RequestParam(value = "lastName", required = true) String lastName,
-			@RequestParam(value = "userName", required = true) String userName,
-			@RequestParam(value = "email", required = true) String email,
-			@RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-			@RequestParam(value = "password", required = true) String password) {
-
-		User user = new User();
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setUserName(userName);
-		user.setEmail(email);
-		user.setPhoneNumber(phoneNumber);
-		user.setPassword(password);
-		userRepository.save(user);
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.CREATED)
+	public String create(@RequestBody User resource) {
+		userRepository.save(resource);
 		return "User created";
 	}
 
-	@GetMapping(path = "/update")
-	public @ResponseBody String updateUser(@RequestParam(value = "id", required = true) Long id,
-			@RequestParam(value = "firstName", required = true) String firstName,
-			@RequestParam(value = "lastName", required = true) String lastName,
-			@RequestParam(value = "userName", required = true) String userName,
-			@RequestParam(value = "email", required = true) String email,
-			@RequestParam(value = "phoneNumber", required = false) String phoneNumber) {
-
-		Optional<User> userOpt = userRepository.findById(id);
+	@RequestMapping(value = "/update", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.OK)
+	public String update(@RequestBody User resource) {
+		Optional<User> userOpt = userRepository.findById(resource.getId());
 		if (userOpt.isPresent()) {
 			User user = userOpt.get();
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-			user.setUserName(userName);
-			user.setEmail(email);
-			user.setPhoneNumber(phoneNumber);
+			user.setFirstName(resource.getFirstName());
+			user.setLastName(resource.getLastName());
+			user.setUserName(resource.getUserName());
+			user.setEmail(resource.getEmail());
+			user.setPhoneNumber(resource.getPhoneNumber());
 			userRepository.save(user);
-			return "User [" + id + "] updated";
+			return "User [" + resource.getId() + "]  updated";
 		} else {
-			return "User [" + id + "] not found";
+			return "User not found";
 		}
 	}
 
-	@GetMapping(path = "/delete/{id}")
+	@RequestMapping(path = "/users/{id}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.OK)
 	public @ResponseBody String deleteUser(@PathVariable("id") Long id) {
 		userRepository.deleteById(id);
 		return "User [" + id + "] deleted";
